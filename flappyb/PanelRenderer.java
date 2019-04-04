@@ -1,8 +1,8 @@
 package flappyb;
 
-import java.awt.Graphics;
-import javax.swing.JPanel;
-import javax.swing.JFrame;
+
+import javax.swing.*;
+import java.awt.*;
 
 public class PanelRenderer extends JPanel {
 
@@ -12,7 +12,7 @@ public class PanelRenderer extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        FlappyB.flappybird.repaint(g);
+        FlappyB.flappybird. repaint(g);
     }
 
 }

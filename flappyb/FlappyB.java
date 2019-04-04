@@ -18,104 +18,104 @@ import javax.swing.JFrame;
 
 public class FlappyB implements ActionListener, KeyListener {
 
-    public static FlappyB flappybird;
+    static FlappyB flappybird;
 
-    public final int WIDTH = 800, HEIGHT = 800;
+    private final int WIDTH = 800, HEIGHT =600 ;
 
-    private JFrame frame;
+    protected JFrame frame;
 
-    
+    private int ticks, yMovement;
+    private int score = 0;
+    private PanelRenderer panelRenderer;
 
-    public int tck, yMotion;
-    public int score = 0;
 
-    public PanelRenderer rend;
 
-    public Rectangle bird;
+    private Rectangle bird;
 
-    public ArrayList<Rectangle> columns;
+    private ArrayList<Rectangle> tubes;
 
-    public Random rand;
+    private Random random;
 
-    public boolean gameOver, started;
+    private boolean gameOver, started;
 
-    public FlappyB() {
-        rend = new PanelRenderer();
-        rand = new Random();
-        Timer t = new Timer(20, this);
+    private FlappyB() {
+        panelRenderer = new PanelRenderer();
+        random = new Random();
+        Timer t = new Timer(15, this);
 
         frame = new JFrame("Flappy Bird");
-        frame.add(rend);
+        frame.add(panelRenderer);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-        frame.setLocation(dim.width/2-400, dim.height/2-400);
+
+        frame.setLocation(dim.width / 2 - 400, dim.height / 2 - 400);
+
+
         frame.setSize(WIDTH, HEIGHT);
         frame.setResizable(false);
         frame.addKeyListener(this);
 
-        //frame.getContentPane().add(emptyLabel, BorderLayout.CENTER);
         frame.setVisible(true);
 
         bird = new Rectangle(WIDTH / 2 - 10, HEIGHT / 2 - 10, 20, 20);
 
-        columns = new ArrayList<Rectangle>();
+        tubes = new ArrayList<Rectangle>();
 
-        addColumn(true);
-        addColumn(true);
-        addColumn(true);
-        addColumn(true);
+        addTubes(true);
+        addTubes(true);
+        addTubes(true);
+        addTubes(true);
+
         t.start();
 
     }
-    
-    
 
-    public void addColumn(boolean start) {
+    private void addTubes(boolean start) {
         int space = 250;
         int width = 60;
-        int height = 50 + rand.nextInt(300);
+        int height = 50 + random.nextInt(300);
 
         if (start) {
-            columns.add(new Rectangle(WIDTH + width + columns.size() * 150, HEIGHT - height - 120, width, height));
-            columns.add(new Rectangle(WIDTH + width + (columns.size() - 1) * 150, 0, width, HEIGHT - height - space));
+            tubes.add(new Rectangle(WIDTH + width + tubes.size() * 150, HEIGHT - height - 120, width, height));
+            tubes.add(new Rectangle(WIDTH + width + (tubes.size() - 1) * 150, 0, width, HEIGHT - height - space));
 
         } else {
-            columns.add(new Rectangle(columns.get(columns.size() - 1).x + 300, HEIGHT - height - 120, width, height));
-            columns.add(new Rectangle(columns.get(columns.size() ).x, 0, width, HEIGHT - height - space));
+            tubes.add(new Rectangle(tubes.get(tubes.size() - 1).x + 300, HEIGHT - height - 120, width, height));
+            tubes.add(new Rectangle(tubes.get(tubes.size() - 1).x, 0, width, HEIGHT - height - space));
 
         }
 
     }
 
-    public void jump() {
+    private void jump() {
         if (gameOver) {
 
             bird = new Rectangle(WIDTH / 2 - 10, HEIGHT / 2 - 10, 20, 20);
-            columns.clear();
-            yMotion = 0;
+            tubes.clear();
+            yMovement = 0;
             score = 0;
 
-            addColumn(true);
-            addColumn(true);
-            addColumn(true);
-            addColumn(true);
+            addTubes(true);
+            addTubes(true);
+            addTubes(true);
+            addTubes(true);
 
             gameOver = false;
         }
 
         if (!started) {
             started = true;
-        } else if (!gameOver) {
-            if (yMotion > 0) {
-                yMotion = 0;
+        } else if (!false) {
+            if (yMovement > 0) {
+                yMovement = 0;
             }
-            {
-                if (bird.y > 0 + bird.height) {
-                    yMotion -= 11;
-                } else {
-                    yMotion = 0;
-                }
+
+            if (bird.y > bird.height) {
+                yMovement -=11;
+            } else {
+                yMovement = 0;
             }
+
         }
     }
 
@@ -125,62 +125,62 @@ public class FlappyB implements ActionListener, KeyListener {
         if (started) {
             if (gameOver) {
 
-                tck++;
-                if (tck % 2 == 0 && yMotion < 15) {
-                    yMotion += 2;
+                ticks++;
+                if (ticks % 2 == 0 && yMovement < 15) {
+                    yMovement += 2;
                 }
 
-                bird.y += yMotion;
+                bird.y += yMovement;
 
-                if (bird.y + yMotion >= HEIGHT - 120) {
+                if (bird.y + yMovement >= HEIGHT - 120) {
                     bird.y = HEIGHT - 120 - bird.height;
                 }
 
             }
             if (!gameOver) {
-                int speed = 6;
-                for (int i = 0; i < columns.size(); i++) {
-                    Rectangle column = columns.get(i);
-                    column.x -= speed;
+                int speed = 5;
+                for (Rectangle tube : tubes) {
+                    tube.x -= speed;
                 }
 
-                tck++;
-                if (tck % 2 == 0 && yMotion < 15) {
-                    yMotion += 2;
+                ticks++;
+
+                if (ticks % 2 == 0 && yMovement < 15) {
+                    yMovement += 2;
                 }
 
-                for (int i = 0; i < columns.size(); i++) {
-                    Rectangle column = columns.get(i);
-                    if (column.x + column.width < 0) {
-                        columns.remove(column);
-                        if (column.y == 0) {
-                            addColumn(false);
+                for (int i = 0; i < tubes.size(); i++) {
+                    Rectangle tube = tubes.get(i);
+                    if (tube.x + tube.width < 0) {
+                        tubes.remove(tube);
+                        if (tube.y == 0) {
+                            addTubes(false);
                         }
                     }
                 }
 
-                bird.y += yMotion;
+                bird.y += yMovement;
 
-                for (Rectangle column : columns) {
+                for (Rectangle tube : tubes) {
 
-                    if (column.y == 0 && bird.x + bird.width > column.x + column.width - 6 && bird.x + bird.width < column.x + column.width + 6) {
+                    if (tube.y == 0 && bird.x + bird.width > tube.x + tube.width - 5 && bird.x + bird.width < tube.x + tube.width + 5) {
                         score++;
 
                     }
-                    if (column.intersects(bird) || bird.y == HEIGHT - 120) {
+                    if (tube.intersects(bird) || bird.y == HEIGHT - 120) {
 
                         gameOver = true;
 
-                        if (bird.x <= column.x) {
-                            bird.x = column.x - bird.width;
+                        if (bird.x <= tube.x) {
+                            bird.x = tube.x - bird.width;
                         } else {
-                            if (column.y != 0) {
-                                bird.y = column.y - bird.height;
-                            } else if (bird.y < column.height) {
-                                bird.y = column.height;
+                            if (tube.y != 0) {
+                                bird.y = tube.y - bird.height;
+                            } else if (bird.y < tube.height) {
+                                bird.y = tube.height;
                             }
                         }
-//
+
                     }
                 }
 
@@ -189,16 +189,12 @@ public class FlappyB implements ActionListener, KeyListener {
                     gameOver = true;
                 }
 
-                if (bird.y >= HEIGHT - HEIGHT) {
 
-                }
             }
 
         }
-        
- 
 
-        rend.repaint();
+        panelRenderer.repaint();
     }
 
     /* public void BirdMovement() {
@@ -207,27 +203,28 @@ public class FlappyB implements ActionListener, KeyListener {
             bird.y += speed;
         }
     }*/
-    public void paintColumn(Graphics g, Rectangle column) {
+    private void paintTube(Graphics g, Rectangle tube) {
         g.setColor(Color.green.darker());
-        g.fillRect(column.x, column.y, column.width, column.height);
+        g.fillRect(tube.x, tube.y, tube.width, tube.height);
     }
 
-    public void repaint(Graphics g) {
+    void repaint(Graphics g) {
 
-        g.setColor(Color.black);
+         g.setColor(Color.black);
         g.fillRect(0, 0, WIDTH, HEIGHT);
 
-        g.setColor(Color.darkGray);
-        g.fillRect(0, HEIGHT - 120, WIDTH, 120);
+        g.setColor(Color.DARK_GRAY);
+        g.fillRect(0, HEIGHT-120, WIDTH, 120 );
 
         g.setColor(Color.green.darker());
         g.fillRect(0, HEIGHT - 120, WIDTH, 20);
 
+
         g.setColor(Color.cyan);
         g.fillRect(bird.x, bird.y, bird.width, bird.height);
 
-        for (Rectangle column : columns) {
-            paintColumn(g, column);
+        for (Rectangle tube : tubes) {
+            paintTube(g, tube);
         }
 
         g.setColor(Color.WHITE);
@@ -240,13 +237,13 @@ public class FlappyB implements ActionListener, KeyListener {
         if (gameOver) {
             g.drawString("GAME OVER", 85, HEIGHT / 2 - 50);
             g.setFont(new Font("Arial", 1, 70));
-            g.drawString("Your score: " + String.valueOf(score), 120, HEIGHT / 2 + 50);
+            g.drawString("Your score: " + score, 120, HEIGHT / 2 + 50);
         }
 
         if (!gameOver && started) {
             g.setColor(Color.WHITE);
             g.setFont(new Font("Arial", 1, 50));
-            g.drawString("Score: " + String.valueOf(score), 60, 100);
+            g.drawString("Score: " + score, 60, 100);
         }
 
     }
